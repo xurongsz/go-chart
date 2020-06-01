@@ -1,7 +1,7 @@
 package chart
 
 import (
-	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/xurongsz/go-chart/drawing"
 )
 
 // Legend returns a legend renderable function.
@@ -124,9 +124,9 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 		legendDefaults := Style{
 			FillColor:   drawing.ColorWhite,
 			FontColor:   DefaultTextColor,
-			FontSize:    8.0,
+			FontSize:    10.0,
 			StrokeColor: DefaultAxisColor,
-			StrokeWidth: DefaultAxisLineWidth,
+			StrokeWidth: 0.0,
 			Padding: Box{
 				Top:    2,
 				Left:   7,
