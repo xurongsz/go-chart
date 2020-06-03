@@ -124,7 +124,7 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 		legendDefaults := Style{
 			FillColor:   drawing.ColorWhite,
 			FontColor:   DefaultTextColor,
-			FontSize:    10.0,
+			FontSize:    16.0,
 			StrokeColor: DefaultAxisColor,
 			StrokeWidth: 0.0,
 			Padding: Box{
