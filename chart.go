@@ -71,6 +71,52 @@ func (c Chart) GetHeight() int {
 	return c.Height
 }
 
+// GetTicks get ticks
+func (c Chart) GetTicks(rp RendererProvider) ([]Tick, []Tick, []Tick, error) {
+	var xt, yt, yta []Tick
+
+	c.YAxisSecondary.AxisType = YAxisSecondary
+
+	r, err := rp(c.GetWidth(), c.GetHeight())
+	if err != nil {
+		return xt, yt, yta, err
+	}
+
+	if c.Font == nil {
+		defaultFont, err := GetDefaultFont()
+		if err != nil {
+			return xt, yt, yta, err
+		}
+		c.defaultFont = defaultFont
+	}
+	r.SetDPI(c.GetDPI(DefaultDPI))
+
+	c.drawBackground(r)
+
+	xr, yr, yra := c.getRanges()
+	canvasBox := c.getDefaultCanvasBox()
+	xf, yf, yfa := c.getValueFormatters()
+
+	Debugf(c.Log, "chart; canvas box: %v", canvasBox)
+
+	xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+
+	if c.hasAxes() {
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+		canvasBox = c.getAxesAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+
+		Debugf(c.Log, "chart; axes adjusted canvas box: %v", canvasBox)
+
+		// do a second pass in case things haven't settled yet.
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+		canvasBox = c.getAxesAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+	}
+
+	return xt, yt, yta, nil
+}
+
 // Render renders the chart with the given renderer to the given io.Writer.
 func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	if len(c.Series) == 0 {
